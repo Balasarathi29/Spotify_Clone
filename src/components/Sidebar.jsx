@@ -25,6 +25,16 @@ const Sidebar = () => {
             <img className="w-5" src={assets.plus_icon} alt="" />
           </div>
         </div>
+        <div className="bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 p-4">
+          <h1>Create your first playlist</h1>
+          <p className="font-light">Its easy we will help you</p>
+          <button className="bg-white text-[15px] text-black rounded-full px-4 py-1.5 mt-3">Create Playlist</button>
+        </div>
+        <div className="bg-[#242424] m-2 rounded font-semibold flex flex-col items-start justify-start gap-1 p-4 mt-3">
+          <h1>Let's findsome podcasts to follow</h1>
+          <p className="font-light">We'll keep you update on new episodes</p>
+          <button className="bg-white text-[15px] text-black rounded-full px-4 py-1.5 mt-3">Browse Podcasts</button>
+        </div>
       </div>
     </div>
   );
