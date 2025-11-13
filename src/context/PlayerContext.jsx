@@ -1,49 +1,87 @@
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { songsData } from "../assets/spotify-assets/assets/assets";
 
 // Step 1: Create the context
 export const PlayerContext = createContext();
 
 // Step 2: Create the provider component
- const PlayerContextProvider = (props) => {
+const PlayerContextProvider = (props) => {
   const audioRef = useRef();
   const seekBg = useRef();
   const seekBar = useRef();
 
-  const [track , setTrack] = useState(songsData[1])
-  const [playerStatus , setPlayerStatus] = useState(false)
-  const [time , setTime] = useState({
-    currentTime : {
-      second :0,
-      minute : 0
+  const [track, setTrack] = useState(songsData[1]);
+  const [playerStatus, setPlayerStatus] = useState(false);
+  const [time, setTime] = useState({
+    currentTime: {
+      second: 0,
+      minute: 0,
     },
-    totalTime:{
-      second : 0,
-      minute : 0,
-    }
-  })
+    totalTime: {
+      second: 0,
+      minute: 0,
+    },
+  });
 
-  const play = ()=>{
+  const play = () => {
     audioRef.current.play();
-    setPlayerStatus(true)
-  }
-  const pause = ()=>{
+    setPlayerStatus(true);
+  };
+  const pause = () => {
     audioRef.current.pause();
-    setPlayerStatus(false)
+    setPlayerStatus(false);
+  };
+  const playWithId = async (id)=>{
+    await setTrack(songsData[id])
+    await audioRef.current.play();
+    setPlayerStatus(true);
   }
+  const previous = async () =>{
+    if(track.id > 0){
+      await setTrack(songsData[track.id - 1])
+      await audioRef.current.play();
+      setPlayerStatus(true);
+    }
+  }
+  const next = async () =>{
+    if(track.id < songsData.length - 1){
+      await setTrack(songsData[track.id + 1])
+      await audioRef.current.play();
+      setPlayerStatus(true);
+    }
+  }
+  const seekSong = async (e) =>{
+    audioRef.current.currentTime = ((e.nativeEvent.offsetX / seekBg.current.offsetWidth) * audioRef.current.duration);
+  }
+  useEffect(() => {
+    setTimeout(() => {
+      audioRef.current.ontimeupdate = () => {
+        seekBar.current.style.width = ( Math.floor(audioRef.current.currentTime) / Math.floor(audioRef.current.duration) ) * 100 + "%";
+        setTime({
+          currentTime: {
+            second: Math.floor(audioRef.current.currentTime % 60),
+            minute: Math.floor(audioRef.current.currentTime / 60),
+          },
+          totalTime: {
+            second: Math.floor(audioRef.current.duration % 60),
+            minute: Math.floor(audioRef.current.duration / 60),
+          },
+        });
+      };
+    }, 1000);
+  }, [audioRef]);
 
   const contextValue = {
     audioRef,
     seekBg,
     seekBar,
-    track,
-    setTrack,
-    playerStatus,
-    setPlayerStatus,
-    time,
-    setTime,
-    play,
-    pause
+    track,setTrack,
+    playerStatus,setPlayerStatus,
+    time,setTime,
+    play,pause,
+    playWithId,
+    next,previous,
+    seekSong
   };
 
   // Step 3: Use PlayerContext.Provider, not PlayerContextProvider
